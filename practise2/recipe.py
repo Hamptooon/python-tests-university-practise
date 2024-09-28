@@ -1,4 +1,5 @@
 # (К)арачев -> (К)артофель по-деревенски
+# (И)горь -> (И)ндейка запеченная
 
 from typing import List, Tuple
 from pydantic import BaseModel, Field
@@ -34,23 +35,38 @@ class Receipt:
     def __str__(self) -> str:
         return f"{self.name}\nИнгредиенты:\n" + "\n".join(str(ing) for ing in self.ingredients)
 
+# Данные рецептов
+potato_receipt_data = {
+    "title": "Картофель по-деревенски",
+    "ingredients_list": [
+        ('Картофель', 500, 400, 50, 30),
+        ('Масло растительное', 50, 50, 20, 0),
+        ('Чеснок', 20, 15, 10, 5),
+        ('Розмарин', 5, 5, 15, 0),
+        ('Соль', 10, 10, 5, 0),
+        ('Перец черный', 5, 5, 10, 0),
+    ],
+}
+
+turkey_receipt_data = {
+    "title": "Индейка запеченная",
+    "ingredients_list": [
+        ('Индейка', 2000, 1600, 500, 120),
+        ('Масло сливочное', 100, 80, 80, 0),
+        ('Чеснок', 30, 25, 15, 5),
+        ('Розмарин', 10, 10, 20, 0),
+        ('Тимьян', 10, 10, 20, 0),
+        ('Соль', 20, 20, 10, 0),
+        ('Перец черный', 10, 10, 15, 0),
+    ],
+}
+
 if __name__ == '__main__':
-    receipt_from_api = {
-        "title": "Картофель по-деревенски",
-        "ingredients_list": [
-            ('Картофель', 500, 400, 50, 30),
-            ('Масло растительное', 50, 50, 20, 0),
-            ('Чеснок', 20, 15, 10, 5),
-            ('Розмарин', 5, 5, 15, 0),
-            ('Соль', 10, 10, 5, 0),
-            ('Перец черный', 5, 5, 10, 0),
-        ],
-    }
-
-    receipt = Receipt(receipt_from_api['title'], receipt_from_api['ingredients_list'])
-
-    print(receipt)
-    print(f"Стоимость: {receipt.calc_cost():.2f} руб.")
-    print(f"Вес сырых продуктов: {receipt.calc_weight(raw=True):.0f} г")
-    print(f"Вес готового блюда: {receipt.calc_weight(raw=False):.0f} г")
-    print(f"Время приготовления: {receipt.calc_cooking_time()} мин")
+    for receipt_data in [potato_receipt_data, turkey_receipt_data]:
+        receipt = Receipt(receipt_data['title'], receipt_data['ingredients_list'])
+        print(receipt)
+        print(f"Стоимость: {receipt.calc_cost():.2f} руб.")
+        print(f"Вес сырых продуктов: {receipt.calc_weight(raw=True):.0f} г")
+        print(f"Вес готового блюда: {receipt.calc_weight(raw=False):.0f} г")
+        print(f"Время приготовления: {receipt.calc_cooking_time()} мин")
+        print("\n" + "="*30 + "\n")
