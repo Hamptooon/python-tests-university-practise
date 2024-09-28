@@ -61,12 +61,8 @@ turkey_receipt_data = {
     ],
 }
 
-if __name__ == '__main__':
-    for receipt_data in [potato_receipt_data, turkey_receipt_data]:
-        receipt = Receipt(receipt_data['title'], receipt_data['ingredients_list'])
-        print(receipt)
-        print(f"Стоимость: {receipt.calc_cost():.2f} руб.")
-        print(f"Вес сырых продуктов: {receipt.calc_weight(raw=True):.0f} г")
-        print(f"Вес готового блюда: {receipt.calc_weight(raw=False):.0f} г")
-        print(f"Время приготовления: {receipt.calc_cooking_time()} мин")
-        print("\n" + "="*30 + "\n")
+
+
+
+#C:\Users\karac\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts\coverage.exe run -m unittest test_recipe.py
+#C:\Users\karac\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts\coverage.exe report -m
