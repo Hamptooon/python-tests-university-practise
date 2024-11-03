@@ -1,5 +1,5 @@
 
-from .models import Receipt
+from .models import Recipe
 
 recipes = [
     {
@@ -27,4 +27,4 @@ recipes = [
     }
 ]
 
-recipes = [Receipt(recipe["title"], recipe["ingredients_list"]) for recipe in recipes]
+recipes = [Recipe(recipe["title"], recipe["ingredients_list"]) for recipe in recipes]

@@ -1,133 +1,76 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="ru">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{{ recipe.name }}</title>
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <style>
-            body {
-                background-color: #121212;
-                color: #e0e0e0;
-                font-family: 'Arial', sans-serif;
-            }
-            .navbar, .card, .list-group-item {
-                background-color: #1f1f1f;
-            }
-            .text-accent {
-                color: #4caf50 !important;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .btn-accent {
-                color: #4caf50;
-                transition: all 0.3s ease;
-            }
-            .btn-accent:hover {
-                background-color: #4caf50;
-                color: #121212;
-            }
-            .badge-cost {
-                background-color: #4caf50;
-                color: #121212;
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
-            .recipe-header h1 {
-                color: #4caf50;
-                font-weight: bold;
-                letter-spacing: 1px;
-            }
-            .recipe-container h2 {
-                color: #4caf50;
-                font-weight: bold;
-                text-transform: uppercase;
-            }
-            .ingredient-item {
-                position: relative;
-                transition: transform 0.3s ease;
-                border: none;
-                border-bottom: 1px solid rgba(128, 128, 128, 0.17);
-            }
-            .ingredient-item:hover {
-                transform: scale(1.02);
-                background-color: #333333;
-            }
-            .ingredient-details {
-                font-size: 0.9rem;
-                opacity: 0.8;
-            }
-            .highlight-box {
-                background: linear-gradient(120deg, #2e7d32, #4caf50, #2e7d32);
-                padding: 20px;
-                color: #121212;
-            }
-        </style>
-    </head>
-    <body>
-        <!-- Навигация -->
-        <nav class="navbar navbar-expand-lg navbar-dark mb-4">
-            <div class="container">
-                <a class="navbar-brand text-accent" href="{% url 'index' %}">Рецепты</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" href="{% url 'index' %}">Главная</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" href="{% url 'about' %}">О компании</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Контент рецепта -->
-        <div class="container mt-5 mb-5">
-            <div class="recipe-header text-center mb-4">
-                <h1>{{ recipe.name }}</h1>
-            </div>
-            <div class="recipe-container">
-                <!-- Ингредиенты -->
-                <h2 class="mb-3">Ингредиенты</h2>
-                <ul class="list-group mb-4">
-                    {% for ingredient in recipe.ingredients %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center ingredient-item">
-                        <div>
-                            <strong class="text-accent">{{ ingredient.name }}</strong>
-                            <div class="ingredient-details text-light">
-                                <strong>Сырьё:</strong> {{ ingredient.raw_weight }} грамм<br />
-                                <strong>Готовое:</strong> {{ ingredient.cooked_weight }} грамм<br />
-                            </div>
-                        </div>
-                        <span class="badge badge-cost rounded-pill">Стоимость - {{ ingredient.cost }}$</span>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ recipe.name }}</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <style>
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Arial', sans-serif; }
+        .navbar, .card, .list-group-item { background-color: #1f1f1f; }
+        .text-accent { color: #4caf50 !important; font-weight: bold; text-transform: uppercase; }
+        .btn-accent { color: #4caf50; transition: all 0.3s ease; }
+        .btn-accent:hover { background-color: #4caf50; color: #121212; }
+        .badge-cost { background-color: #4caf50; color: #121212; font-weight: 600; font-size: 0.9rem; }
+        .recipe-header h1 { color: #4caf50; font-weight: bold; letter-spacing: 1px; }
+        .recipe-container h2 { color: #4caf50; font-weight: bold; text-transform: uppercase; }
+        .ingredient-item { border: none; border-bottom: 1px solid rgba(128, 128, 128, 0.17); }
+        .highlight-box { background: linear-gradient(120deg, #2e7d32, #4caf50, #2e7d32); padding: 20px; color: #121212; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand text-accent" href="{% url 'index' %}">Рецепты</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{% url 'index' %}">Главная</a>
                     </li>
-                    {% endfor %}
+                    <li class="nav-item">
+                        <a class="nav-link text-light" href="{% url 'about' %}">О компании</a>
+                    </li>
                 </ul>
-
-                <!-- Общая информация о рецепте -->
-                <div class="highlight-box text-center mt-4">
-                    <p class="mb-2">
-                        <strong>Общая стоимость:</strong> {{ recipe.calc_cost }}$
-                    </p>
-                    <p class="mb-2">
-                        <strong>Общий вес (сырьё):</strong> {{ total_raw_weight }} грамм
-                    </p>
-                    <p>
-                        <strong>Общий вес (готовое):</strong> {{ total_cooked_weight }} грамм
-                    </p>
-                </div>
-
             </div>
         </div>
+    </nav>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    </body>
+    <div class="container mt-5 mb-5">
+        <div class="recipe-header text-center mb-4">
+            <h1>{{ recipe.name }}</h1>
+        </div>
+        <div class="recipe-container">
+            <h2 class="mb-3">Ингредиенты</h2>
+            <ul class="list-group mb-4">
+                {% for ingredient in recipe.ingredients.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center ingredient-item">
+                    <div>
+                        <strong class="text-accent">{{ ingredient.name }}</strong>
+                        <div class="ingredient-details text-light">
+                            <strong>Сырьё:</strong> {{ ingredient.raw_weight }} грамм<br />
+                            <strong>Готовое:</strong> {{ ingredient.cooked_weight }} грамм<br />
+                        </div>
+                    </div>
+                    <span class="badge badge-cost rounded-pill">Стоимость - {{ ingredient.cost }} ₽</span>
+                </li>
+                {% endfor %}
+            </ul>
+
+            <div class="highlight-box text-center mt-4">
+                <p class="mb-2"><strong>Общая стоимость:</strong> {{ recipe.calc_cost }} ₽</p>
+                <p class="mb-2"><strong>Общий вес (сырьё):</strong> {{ total_raw_weight }} грамм</p>
+                <p><strong>Общий вес (готовое):</strong> {{ total_cooked_weight }} грамм</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

@@ -1,86 +1,52 @@
 from django.db import models
 
-# Create your models here.
-# (К)арачев -> (К)артофель по-деревенски
-# (И)горь -> (И)ндейка запеченная
-
-from typing import List, Tuple
-from pydantic import BaseModel, Field
-
-class Ingredient(BaseModel):
+class Ingredient(models.Model):
     """Ингредиент."""
-    name: str
-    raw_weight: float = Field(gt=0)
-    cooked_weight: float = Field(gt=0)
-    cost: float = Field(ge=0)
-    cooking_time: int = Field(ge=0)
+    name = models.CharField(max_length=100)
+    raw_weight = models.FloatField(help_text="Вес сырого ингредиента в граммах")
+    cooked_weight = models.FloatField(help_text="Вес приготовленного ингредиента в граммах", null=True, blank=True)
+    cost = models.DecimalField(max_digits=7, decimal_places=2, help_text="Стоимость ингредиента в рублях")
+    cooking_time = models.IntegerField(help_text="Время приготовления в минутах", null=True, blank=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"{self.name} ({self.raw_weight:.0f}г)"
 
-class Receipt:
-    _id_counter = 1
-    def __init__(self, name: str, ingredient_list: List[Tuple[str, float, float, float, int]]) -> None:
-        self.id = Receipt._id_counter
-        Receipt._id_counter += 1
-        self.name = name
-        self.ingredients = [Ingredient(name=ing[0], raw_weight=ing[1], cooked_weight=ing[2], cost=ing[3], cooking_time=ing[4]) for ing in ingredient_list]
 
-    @property
-    def id(self):
-        return self._id
-
-    @id.setter
-    def id(self, value):
-        if not isinstance(value, int):
-            raise ValueError("ID must be an integer.")
-        if value <= 0:
-            raise ValueError("ID must be a positive number.")
-        self._id = value
+class Recipe(models.Model):
+    """Рецепт, содержащий список ингредиентов."""
+    name = models.CharField(max_length=200)
+    ingredients = models.ManyToManyField(Ingredient, related_name="recipes", through='RecipeIngredient')
 
     def calc_cost(self, portions=1) -> float:
-        return sum(ing.cost * portions for ing in self.ingredients)
+        """Метод для расчета общей стоимости рецепта."""
+        return sum(ingredient.cost * portions for ingredient in self.ingredients.all())
 
     def calc_weight(self, portions=1, raw=True) -> float:
+        """Метод для расчета общего веса рецепта."""
         if raw:
-            return sum(ing.raw_weight * portions for ing in self.ingredients)
-        else:
-            return sum(ing.cooked_weight * portions for ing in self.ingredients)
+            return sum(ingredient.raw_weight * portions for ingredient in self.ingredients.all())
+        return sum((ingredient.cooked_weight or ingredient.raw_weight) * portions for ingredient in self.ingredients.all())
 
     def calc_cooking_time(self) -> int:
-        return max(ing.cooking_time for ing in self.ingredients)
+        """Метод для расчета максимального времени приготовления среди всех ингредиентов."""
+        return max((ingredient.cooking_time for ingredient in self.ingredients.all()), default=0)
 
-    def __str__(self) -> str:
-        return f"{self.name}\nИнгредиенты:\n" + "\n".join(str(ing) for ing in self.ingredients)
-
-# Данные рецептов
-potato_receipt_data = {
-    "title": "Картофель по-деревенски",
-    "ingredients_list": [
-        ('Картофель', 500, 400, 50, 30),
-        ('Масло растительное', 50, 50, 20, 0),
-        ('Чеснок', 20, 15, 10, 5),
-        ('Розмарин', 5, 5, 15, 0),
-        ('Соль', 10, 10, 5, 0),
-        ('Перец черный', 5, 5, 10, 0),
-    ],
-}
-
-turkey_receipt_data = {
-    "title": "Индейка запеченная",
-    "ingredients_list": [
-        ('Индейка', 2000, 1600, 500, 120),
-        ('Масло сливочное', 100, 80, 80, 0),
-        ('Чеснок', 30, 25, 15, 5),
-        ('Розмарин', 10, 10, 20, 0),
-        ('Тимьян', 10, 10, 20, 0),
-        ('Соль', 20, 20, 10, 0),
-        ('Перец черный', 10, 10, 15, 0),
-    ],
-}
+    def __str__(self):
+        return self.name
 
 
+class RecipeIngredient(models.Model):
+    """Промежуточная модель для связи рецепта и ингредиента с количеством."""
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    quantity = models.FloatField(help_text="Количество ингредиента в рецепте", default=1)
 
-
-#C:\Users\karac\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts\coverage.exe run -m unittest test_recipe.py
-#C:\Users\karac\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.9_qbz5n2kfra8p0\LocalCache\local-packages\Python39\Scripts\coverage.exe report -m
+    def __str__(self):
+        return f"{self.recipe.name} - {self.ingredient.name} ({self.quantity})"
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient',
+            )
+        ]

@@ -1,11 +1,11 @@
-from django.shortcuts import render
-from django.http import Http404
-from .constants import recipes
+from django.shortcuts import render, get_object_or_404
+from .models import Recipe
 
 def about(request):
     return render(request, 'recipe_catalog/about.html')
 
 def index(request):
+    recipes = Recipe.objects.all()
     return render(
         request=request,
         template_name='recipe_catalog/index.html',
@@ -13,12 +13,9 @@ def index(request):
     )
 
 def recipe_detail(request, pk):
-    recipe = next((r for r in recipes if r.id == pk), None)
-    if recipe is None:
-        raise Http404("Recipe does not exist")
-    total_raw_weight = recipe.calc_weight(raw=True, portions=1)
-    total_cooked_weight = recipe.calc_weight(raw=False, portions=1)
-    print(total_cooked_weight)
+    recipe = get_object_or_404(Recipe, pk=pk)
+    total_raw_weight = recipe.calc_weight(raw=True)
+    total_cooked_weight = recipe.calc_weight(raw=False)
     return render(
         request=request,
         template_name='recipe_catalog/recipe.html',
